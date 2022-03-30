@@ -1,121 +1,153 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "shader.h"
+#include "element_sim.h"
+#include "resource_manager.h"
 
 #include <iostream>
 
-int window_width = 800;
-int window_height = 600;
+//TODO: Разработать отдельный класс под игровое пространство (т.е. уровень)
+//TODO: В данном классе нужно реализовать подгрузку игрового поля с клетками и всё остальное
+//TODO: Реализовать генерацию простой частицы с пустой текстурой (а далее уже попрёт со всеми остальными)))))
 
-float vertices[] = {
-	 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-	-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
-};
-
+// GLFW function declarations
 void framebuffer_size_callback(
-	GLFWwindow* window,
-	int width,
-	int height
+    GLFWwindow* window, 
+    int width, 
+    int height
+);
+void key_callback(
+    GLFWwindow* window, 
+    int key, 
+    int scancode, 
+    int action, 
+    int mode
 );
 
-void process_input(GLFWwindow* window);
+// The Width of the screen
+constexpr unsigned int screen_width = 800;
+// The height of the screen
+constexpr unsigned int screen_height = 600;
 
-int main()
+element_sim sandbox(screen_width, screen_height);
+
+int main(int argc, char* argv[])
 {
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+    glfwWindowHint(GLFW_RESIZABLE, false);
 
-	GLFWwindow* window = glfwCreateWindow(
-		window_width,
-		window_height,
-		"Coursework init window",
-		nullptr,
-		nullptr);
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    GLFWwindow* window = 
+        glfwCreateWindow(
+            screen_width,
+            screen_height,
+            "Sandbox",
+            nullptr,
+            nullptr
+        );
+    glfwMakeContextCurrent(window);
 
-	if (window == nullptr)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
 
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
+    // OpenGL configuration
+    // --------------------
+    glViewport(0, 0, screen_width, screen_height);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//Shader things
-	shader basic_shader("../shader/basic_shader_vert.glsl", "../shader/basic_shader_frag.glsl");
+    // initialize element_sim
+    // ---------------
+    sandbox.init();
 
-	unsigned int basic_vbo, basic_vao;
-	glGenVertexArrays(1, &basic_vao);
-	glGenBuffers(1, &basic_vbo);
+    // deltaTime variables
+    // -------------------
+    float delta_time = 0.0f;
+    float last_frame = 0.0f;
 
-	glBindVertexArray(basic_vao);
-	glBindBuffer(GL_ARRAY_BUFFER, basic_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glm::mat4 projection = glm::ortho(
+        0.0f,
+        800.0f,
+        600.0f,
+        0.0f,
+        -1.0f,
+        1.0f
+    );
 
-	//coordinate atributes:
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
-	glEnableVertexAttribArray(0);
+    while (!glfwWindowShouldClose(window))
+    {
+        // calculate delta time
+        // --------------------
+        const float current_frame = glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
+        glfwPollEvents();
 
-	//Color attributes:
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+        // manage user input
+        // -----------------
+        sandbox.process_input(delta_time);
 
-	//Render cycle
-	while (!glfwWindowShouldClose(window))
-	{
-		//Processing user input:
-		process_input(window);
+        // update element_sim state
+        // -----------------
+        sandbox.update(delta_time);
 
-		//Performing rendering
-		glClearColor(0.2f, 0.3f, 0.3f, 0.1f);
-		glClear(GL_COLOR_BUFFER_BIT);
+        // render
+        // ------
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        sandbox.render();
 
-		//Render of a triangles:
-		basic_shader.use();
-		glBindVertexArray(basic_vao);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+        glfwSwapBuffers(window);
+    }
 
-		//Swapping contents of front and back buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
+    // delete all resources as loaded using the resource manager
+    // ---------------------------------------------------------
+    resource_manager::clear();
 
-	//Deleting vertex arrays and buffers
-	glDeleteVertexArrays(1, &basic_vao);
-	glDeleteBuffers(1, &basic_vbo);
+    glfwTerminate();
+    return 0;
+}
 
-	glfwTerminate();
-	return 0;
+void key_callback(
+    GLFWwindow* window,
+    const int key, 
+    int scancode,
+    const int action,
+    int mode
+)
+{
+    // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    if (key >= 0 && key < 1024)
+    {
+        if (action == GLFW_PRESS)
+            sandbox.keys[key] = true;
+        else if (action == GLFW_RELEASE)
+            sandbox.keys[key] = false;
+    }
 }
 
 void framebuffer_size_callback(
-	GLFWwindow* window,
-	const int width,
-	const int height
+    GLFWwindow* window,
+    const int width,
+    const int height
 )
 {
-
-	glViewport(0, 0, width, height);
-
-}
-
-void process_input(GLFWwindow* window)
-{
-
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, true);
-	}
-
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
 }

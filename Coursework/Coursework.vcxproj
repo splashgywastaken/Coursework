@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>D:\projects\OpenGL\Projects\Coursework\Libraries;$(LibraryPath)</LibraryPath>
-    <IncludePath>D:\projects\OpenGL\Projects\Coursework\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\projects HDD\OpenGL\Projects\Coursework\Libraries;D:\projects\OpenGL\Projects\Coursework\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\projects HDD\OpenGL\Projects\Coursework\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -142,15 +142,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="basic_shader_frag.glsl" />
-    <None Include="basic_shader_vert.glsl" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="element_sim.cpp" />
+    <ClCompile Include="game_level.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="resource_manager.cpp" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="sprite_renderer.cpp" />
+    <ClCompile Include="stb_inage.cpp" />
+    <ClCompile Include="texture_2d.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="element.h" />
+    <ClInclude Include="elements_data.h" />
+    <ClInclude Include="element_sim.h" />
+    <ClInclude Include="game_level.h" />
+    <ClInclude Include="game_state.h" />
+    <ClInclude Include="gas.h" />
+    <ClInclude Include="immovable_solid.h" />
+    <ClInclude Include="liquid.h" />
+    <ClInclude Include="movable_solid.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource_manager.h" />
+    <ClInclude Include="sand.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="solid.h" />
+    <ClInclude Include="sprite_renderer.h" />
+    <ClInclude Include="texture_2d.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Coursework.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

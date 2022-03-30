@@ -5,6 +5,12 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Coursework", "Coursework\Coursework.vcxproj", "{58FBE409-E8F2-4BFB-BFD0-E6FBC2A11691}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A2D267B7-E052-4EA5-91F0-FADFB7A6D4A4}"
+	ProjectSection(SolutionItems) = preProject
+		shaders\basic_shader_frag.glsl = shaders\basic_shader_frag.glsl
+		shaders\basic_shader_vert.glsl = shaders\basic_shader_vert.glsl
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

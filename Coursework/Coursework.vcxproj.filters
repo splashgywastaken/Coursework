@@ -13,10 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="basic_shader_frag.glsl" />
-    <None Include="basic_shader_vert.glsl" />
+    <Filter Include="Elements">
+      <UniqueIdentifier>{ff7d2137-ee69-429d-86d2-86fe1c868d75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Elements\solid">
+      <UniqueIdentifier>{5b1c8b29-8026-4bb1-a28b-fee215ebc26b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Elements\gas">
+      <UniqueIdentifier>{f862ee86-7671-4601-9c15-4dbcca0c99f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Elements\liquid">
+      <UniqueIdentifier>{67c724e0-c0aa-4af3-84cd-812e85112e37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\services">
+      <UniqueIdentifier>{55893ed7-3d38-4c09-b086-70b533dfcd28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\services">
+      <UniqueIdentifier>{1755d28a-c505-40b9-8e85-c6ffa3910f16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -25,10 +39,84 @@
     <ClCompile Include="glad.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="element_sim.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_inage.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="game_level.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_manager.cpp">
+      <Filter>Исходные файлы\services</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite_renderer.cpp">
+      <Filter>Исходные файлы\services</Filter>
+    </ClCompile>
+    <ClCompile Include="texture_2d.cpp">
+      <Filter>Исходные файлы\services</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Исходные файлы\services</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="shader.h">
+    <ClInclude Include="camera.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="element_sim.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="game_state.h">
+      <Filter>Файлы ресурсов</Filter>
+    </ClInclude>
+    <ClInclude Include="element.h">
+      <Filter>Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="game_level.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="gas.h">
+      <Filter>Elements\gas</Filter>
+    </ClInclude>
+    <ClInclude Include="liquid.h">
+      <Filter>Elements\liquid</Filter>
+    </ClInclude>
+    <ClInclude Include="solid.h">
+      <Filter>Elements\solid</Filter>
+    </ClInclude>
+    <ClInclude Include="movable_solid.h">
+      <Filter>Elements\solid</Filter>
+    </ClInclude>
+    <ClInclude Include="immovable_solid.h">
+      <Filter>Elements\solid</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_manager.h">
+      <Filter>Файлы заголовков\services</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite_renderer.h">
+      <Filter>Файлы заголовков\services</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Файлы заголовков\services</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_2d.h">
+      <Filter>Файлы заголовков\services</Filter>
+    </ClInclude>
+    <ClInclude Include="sand.h">
+      <Filter>Elements\solid</Filter>
+    </ClInclude>
+    <ClInclude Include="elements_data.h">
+      <Filter>Elements</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Coursework.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
