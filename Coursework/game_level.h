@@ -19,10 +19,10 @@ public:
 	void load(unsigned int level_width, unsigned int level_height);
 
 	// шаг для обхода элементов
-	void simulate() const;
+	void simulate();
 
 	// рендер уровня
-	void draw(sprite_renderer& renderer) const;
+	void draw(sprite_renderer* renderer) const;
 
 	// Получение индекса элемента
 	uint32_t compute_idx(uint32_t x, uint32_t y) const;
@@ -40,24 +40,26 @@ public:
 	bool is_element_completely_surrounded(uint32_t x, uint32_t y) const;
 
 	// Поставить элемент element на координаты х и у
-	void put_element(uint32_t x, uint32_t y, element& element);
+	void put_element(uint32_t x, uint32_t y, element* element);
 
 	// Метод для установки пикселей на определенные точки
 	void draw_circle(
-		int xc,
-		int yc,
-		int x,
-		int y,
-		element& element
+		const int xc,
+		const int yc,
+		const int x,
+		const int y,
+		element* element
 	);
 
 	// Метод построения окружности по методу Брезенхама
 	void circle_bres(
-		int xc,
-		int yc,
-		int r,
-		element& element
+		const int xc,
+		const int yc,
+		const int r,
+		element* element
 	);
+
+	void update_sand(uint32_t xpos, uint32_t ypos);
 
 	//TODO: Добавить методы по обновлению состояний элементов в сетке
 };

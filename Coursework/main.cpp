@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "sand.h"
+
 //TODO: Разработать отдельный класс под игровое пространство (т.е. уровень)
 //TODO: В данном классе нужно реализовать подгрузку игрового поля с клетками и всё остальное
 //TODO: Реализовать генерацию простой частицы с пустой текстурой (а далее уже попрёт со всеми остальными)))))
@@ -22,6 +24,12 @@ void key_callback(
     int scancode, 
     int action, 
     int mode
+);
+void mouse_button_callback(
+    GLFWwindow* window,
+    int button,
+    int action,
+    int mods
 );
 
 // The Width of the screen
@@ -62,6 +70,7 @@ int main(int argc, char* argv[])
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     // OpenGL configuration
     // --------------------
@@ -98,7 +107,7 @@ int main(int argc, char* argv[])
 
         // manage user input
         // -----------------
-        sandbox.process_input(delta_time);
+        
 
         // update element_sim state
         // -----------------
@@ -119,6 +128,33 @@ int main(int argc, char* argv[])
 
     glfwTerminate();
     return 0;
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+
+        element* sand_element = new sand(
+            glm::vec2(xpos, ypos),
+            glm::vec2(1.0f),
+            resource_manager::get_texture("face"),
+            glm::vec2(0.0f, 0.0f)
+        );
+
+        sandbox.add_element_to_level(sand_element, xpos, ypos);
+
+        /*sandbox.draw_circle(
+            sand_element,
+            xpos,
+            ypos,
+            32
+        );*/
+    }
+
 }
 
 void key_callback(

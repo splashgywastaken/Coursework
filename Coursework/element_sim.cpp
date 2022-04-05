@@ -10,8 +10,12 @@ element_sim::element_sim(
 	:
 	state(game_state::game_menu),
 	width(width),
-	height(height), renderer(nullptr)
+	height(height),
+	renderer(nullptr),
+	level(new game_level())
 {
+    // допилить использование игрового уровня
+    level->load(width, height);
 }
 
 element_sim::~element_sim() = default;
@@ -44,21 +48,33 @@ void element_sim::init()
 
 void element_sim::update(float dt)
 {
-	
-}
-
-void element_sim::process_input(float dt)
-{
-
+	level->simulate();
 }
 
 void element_sim::render()
 {
-    renderer->draw_sprite(
+    /*renderer->draw_sprite(
         resource_manager::get_texture("face"),
         glm::vec2(200.0f, 200.0f), 
         glm::vec2(300.0f, 400.0f),
         45.0f,
         glm::vec3(0.0f, 1.0f, 0.0f)
-    );
+    );*/
+
+    level->draw(renderer);
+
+}
+
+void element_sim::draw_circle(element* element, uint32_t cx, uint32_t cy, uint32_t r)
+{
+
+    level->circle_bres(cx, cy, r, element);
+
+}
+
+void element_sim::add_element_to_level(element* element, uint32_t x, uint32_t y)
+{
+
+    level->put_element(x, y, element);
+
 }

@@ -29,6 +29,7 @@ public:
 
 	// конструкторы
 	element();
+	element(element& element);
 	element(
 		glm::vec2 pos,
 		glm::vec2 size,
@@ -55,6 +56,17 @@ inline element::element()
 	destroyed(false)
 {
 	
+}
+
+inline element::element(element& element) :
+	position(element.position),
+	size(element.size),
+	velocity(element.velocity),
+	color(element.color),
+	destroyed(element.destroyed),
+	sprite(element.sprite)
+{
+
 }
 
 inline element::element(
