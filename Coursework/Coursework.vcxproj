@@ -150,7 +150,7 @@
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="sprite_renderer.cpp" />
-    <ClCompile Include="stb_inage.cpp" />
+    <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="texture_2d.cpp" />
   </ItemGroup>
   <ItemGroup>

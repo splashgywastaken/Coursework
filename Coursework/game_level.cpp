@@ -159,7 +159,7 @@ void game_level::put_element(
 	element_particle* element
 ) const
 {
-	if (is_element_in_bounds(x, y) && is_empty(x, y))
+	if (is_element_in_bounds(x, y) && (is_empty(x, y) || element == nullptr))
 	{
 		elements[compute_idx(x, y)] = element;
 	}

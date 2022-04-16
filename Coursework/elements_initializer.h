@@ -1,5 +1,7 @@
 #ifndef ELEMENTS_INITIALIZER_H
 #define ELEMENTS_INITIALIZER_H
+#include <random>
+
 #include "element_particle.h"
 #include "resource_manager.h"
 
@@ -15,6 +17,7 @@
  *			0 - пустота,
  *			1 - песок,
  *			2 - вода
+ *			3 - камень
  */
 class elements_initializer
 {
@@ -32,7 +35,7 @@ public:
 
 	static element_particle sand(glm::vec2 velocity)
 	{
-		const float r = get_random_float(32, 64);
+		const float r = get_random_int(32, 64);
 
 		return {
 			1,
@@ -44,7 +47,7 @@ public:
 
 	static element_particle water(glm::vec2 velocity)
 	{
-		const float r = get_random_float(214, 255);
+		const float r = get_random_int(214, 255);
 
 		return {
 			2,
@@ -54,10 +57,23 @@ public:
 		};
 	}
 
-private:
-	static float get_random_float(const float min, const float max)
+	static element_particle stone()
 	{
-		return min + static_cast <float> (rand()) / (RAND_MAX / (max - min));
+		const float r = get_random_int(50, 125);
+		return {
+			0,
+			3,
+			glm::vec2(0.0f),
+			glm::vec3(r/ 255.0f, r / 255.0f, r / 255.0f)
+		};
+	}
+
+private:
+	static float get_random_int(const float min, const float max)
+	{
+		static thread_local std::mt19937 generator;
+		const std::uniform_int_distribution<int> distribution(min, max);
+		return distribution(generator);
 	}
 
 };

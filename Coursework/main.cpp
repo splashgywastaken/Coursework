@@ -175,6 +175,12 @@ void mouse_hold(GLFWwindow* window)
                 new element_particle(
                     elements_initializer::water(glm::vec2(0.0f))
                 );
+        } else if (brush_element_id == 3)
+        {
+            element =
+                new element_particle(
+                    elements_initializer::stone()
+                );
         }
 
         sandbox->draw_circle(element, xpos, ypos, brush_radius);
@@ -222,6 +228,10 @@ void key_callback(
     if (key == GLFW_KEY_2 && action == GLFW_PRESS)
     {
         brush_element_id = 2;
+    }
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+    {
+        brush_element_id = 3;
     }
 }
 
