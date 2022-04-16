@@ -42,7 +42,6 @@ void sprite_renderer::init_render_data()
 }
 
 void sprite_renderer::draw_sprite(
-	const texture_2d& texture,
     const glm::vec2 position,
     const glm::vec2 size,
     const float rotate,
@@ -54,17 +53,10 @@ void sprite_renderer::draw_sprite(
     auto model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));
 
-    model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-    model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-
     model = glm::scale(model, glm::vec3(size, 1.0f));
 
     this->shader_.set_matrix4("model", model);
     this->shader_.set_vector3_f("spriteColor", color);
-
-    glActiveTexture(GL_TEXTURE0);
-    texture.bind();
 
     glBindVertexArray(this->quad_vao_);
     glDrawArrays(GL_TRIANGLES, 0, 6);

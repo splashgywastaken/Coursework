@@ -1,9 +1,0 @@
-#define ELEMENT_EMPTY 0;
-#define ELEMENT_DIRT 1;
-#define ELEMENT_SAND 2;
-#define ELEMENT_WATER 3;
-#define ELEMENT_STONE 4;
-#define ELEMENT_TREE 5;
-#define ELEMENT_FIRE 6;
-#define ELEMENT_SMOKE 7;
-#define ELEMENT_STEAM 8;

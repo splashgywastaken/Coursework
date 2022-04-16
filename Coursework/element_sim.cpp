@@ -27,7 +27,7 @@ void element_sim::init()
         "../shaders/basic_shader_vert.glsl",
         "../shaders/basic_shader_frag.glsl", 
         nullptr, 
-        "sprite"
+        "element"
     );
     // configure shaders
     const glm::mat4 projection = glm::ortho(
@@ -38,43 +38,49 @@ void element_sim::init()
         -1.0f, 
         1.0f
     );
-    resource_manager::get_shader("sprite").use().set_integer("image", 0);
-    resource_manager::get_shader("sprite").set_matrix4("projection", projection);
+    resource_manager::get_shader("element").use().set_integer("image", 0);
+    resource_manager::get_shader("element").set_matrix4("projection", projection);
     // set render-specific controls
-    renderer = new sprite_renderer(resource_manager::get_shader("sprite"));
-    // load textures
-    resource_manager::load_texture( "../textures/awesomeface.png", true, "face");
+    renderer = new sprite_renderer(resource_manager::get_shader("element"));
+    //// load textures
+    //resource_manager::load_texture( "../textures/element.png", false, "sand");
+    //resource_manager::load_texture("../textures/empty.png", true, "empty");
+    //resource_manager::load_texture("../textures/empty.png", true, "water");
 }
 
-void element_sim::update(float dt)
+void element_sim::update(float dt) const
 {
-	level->simulate();
+    if (!pause_simulation)
+	{
+		level->update_element_sim();
+	}
 }
 
-void element_sim::render()
+void element_sim::render() const
 {
-    /*renderer->draw_sprite(
-        resource_manager::get_texture("face"),
-        glm::vec2(200.0f, 200.0f), 
-        glm::vec2(300.0f, 400.0f),
-        45.0f,
-        glm::vec3(0.0f, 1.0f, 0.0f)
-    );*/
-
     level->draw(renderer);
-
 }
 
-void element_sim::draw_circle(element* element, uint32_t cx, uint32_t cy, uint32_t r)
+void element_sim::clear_level() const
 {
-
-    level->circle_bres(cx, cy, r, element);
-
+    level->clear();
 }
 
-void element_sim::add_element_to_level(element* element, uint32_t x, uint32_t y)
+void element_sim::pause()
 {
+    pause_simulation = !pause_simulation;
+}
 
-    level->put_element(x, y, element);
+void element_sim::draw_circle(
+	element_particle* element,
+	const uint32_t cx,
+	const uint32_t cy,
+	uint32_t r
+) const
+{
+	while (r > 0)
+	{
+		level->circle_bres(cx, cy, --r, element);
+	}
 
 }

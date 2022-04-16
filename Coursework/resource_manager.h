@@ -28,7 +28,7 @@ public:
 				        const char* g_shader_file,
 				        const std::string& name
 					);
-    // retrieves a stored sader
+    // retrieves a stored shader
     static shader    get_shader(const std::string& name);
     // loads (and generates) a texture from file
     static texture_2d load_texture(

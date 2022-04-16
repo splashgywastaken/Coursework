@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="elements_initializer.cpp" />
     <ClCompile Include="element_sim.cpp" />
     <ClCompile Include="game_level.cpp" />
     <ClCompile Include="glad.c" />
@@ -154,20 +155,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
-    <ClInclude Include="element.h" />
-    <ClInclude Include="elements_data.h" />
+    <ClInclude Include="elements_initializer.h" />
+    <ClInclude Include="element_particle.h" />
     <ClInclude Include="element_sim.h" />
+    <ClInclude Include="empty.h" />
     <ClInclude Include="game_level.h" />
     <ClInclude Include="game_state.h" />
-    <ClInclude Include="gas.h" />
-    <ClInclude Include="immovable_solid.h" />
-    <ClInclude Include="liquid.h" />
-    <ClInclude Include="movable_solid.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource_manager.h" />
-    <ClInclude Include="sand.h" />
     <ClInclude Include="shader.h" />
-    <ClInclude Include="solid.h" />
     <ClInclude Include="sprite_renderer.h" />
     <ClInclude Include="texture_2d.h" />
   </ItemGroup>

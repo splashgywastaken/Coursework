@@ -3,7 +3,7 @@
 #include "elements_data.h"
 #include "movable_solid.h"
 
-class sand :
+class sand final :
 public movable_solid
 {
 public:
@@ -12,14 +12,14 @@ public:
 		glm::vec2& pos, 
 		glm::vec2& size, 
 		texture_2d& sprite,
+		glm::vec3& color,
 		glm::vec2& velocity
 	)
 		: movable_solid(
 			pos, 
 			size, 
 			sprite,
-			// Приблизительно темно-желтый цвет 
-			color = glm::vec3(216.0f / 255.0f, 169.0f / 255.0f, 12.0f / 255.0f),
+			color,
 			velocity
 		)
 	{
@@ -30,14 +30,14 @@ public:
 		glm::vec2 pos,
 		glm::vec2 size,
 		texture_2d sprite,
+		glm::vec3 color,
 		glm::vec2 velocity
 	)
 		: movable_solid(
 			pos,
 			size,
 			sprite,
-			// Приблизительно темно-желтый цвет 
-			color = glm::vec3(216.0f / 255.0f, 169.0f / 255.0f, 12.0f / 255.0f),
+			color,
 			velocity
 		)
 	{
