@@ -46,6 +46,10 @@ void element_sim::init()
     //resource_manager::load_texture( "../textures/element.png", false, "sand");
     //resource_manager::load_texture("../textures/empty.png", true, "empty");
     //resource_manager::load_texture("../textures/empty.png", true, "water");
+
+    // Подгрузка обработчика шрифтов:
+    text = new text_renderer(this->width, this->height);
+    text->load("../Fonts/ArcadeClassic.TTF", 24);
 }
 
 void element_sim::update(float dt) const
@@ -59,6 +63,9 @@ void element_sim::update(float dt) const
 void element_sim::render() const
 {
     level->draw(renderer);
+    text->render_text(
+        "Sandbox", 5.0f, 5.0f, 1.0f
+    );
 }
 
 void element_sim::clear_level() const

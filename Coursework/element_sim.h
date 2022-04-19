@@ -4,6 +4,7 @@
 #include "game_level.h"
 #include "game_state.h"
 #include "sprite_renderer.h"
+#include "text_renderer.h"
 
 class element_sim
 {
@@ -16,6 +17,8 @@ public:
 	bool pause_simulation = false;
 	//Sprite renderer object:
 	sprite_renderer *renderer;
+	//Fonts renderer
+	text_renderer* text;
 	//Game level object
 	game_level *level;
 	//Constructor
