@@ -9,13 +9,12 @@
 #include "texture_2d.h"
 #include "shader.h"
 
-
 /// Holds all state information relevant to a character as loaded using FreeType
 struct character {
     unsigned int texture_id; // ID handle of the glyph texture
-    glm::ivec2   size;      // size of glyph
-    glm::ivec2   bearing;   // offset from baseline to left/top of glyph
-    unsigned int advance;   // horizontal offset to advance to next glyph
+    glm::ivec2   size;       // size of glyph
+    glm::ivec2   bearing;    // offset from baseline to left/top of glyph
+    unsigned int advance;    // horizontal offset to advance to next glyph
 };
 
 

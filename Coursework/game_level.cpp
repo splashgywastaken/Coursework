@@ -1,3 +1,5 @@
+// ReSharper disable CppClangTidyClangDiagnosticImplicitIntConversion
+// ReSharper disable CppClangTidyCppcoreguidelinesNarrowingConversions
 #include "game_level.h"
 
 #include <iostream>
@@ -5,38 +7,32 @@
 #include "elements_initializer.h"
 #include "sprite_renderer.h"
 
-void game_level::load(unsigned int level_width, unsigned int level_height)
+void game_level::load(const int input_level_width, const int input_level_height)
 {
 	//инициализация элементов
-	this->level_height = level_height;
-	this->level_width = level_width;
+	this->level_height = input_level_height;
+	this->level_width = input_level_width;
 
-	elements_init(level_width * level_height);
+	elements_init();
 }
 
-void game_level::elements_init(const int n)
+void game_level::elements_init()
 {
-	if (elements != nullptr)
-	{
-		for (int i = 0; i < n; i++)
-		{
-			elements[i] = nullptr;
-		}
-		delete elements;
-	}
-
-	delete update_structure;
+	const int n = level_height * level_width;
 
 	update_structure = new bool[n];
-	elements = new element_particle*[n];
+	elements = new std::vector<element_particle*>;
+	elements->resize(n);
 	for (int i = 0; i < n; i++)
 	{
-		elements[i] = nullptr;
+		elements->at(i) = new element_particle(elements_initializer::empty());
 	}
 }
 
-void game_level::update_element_sim()
+void game_level::update_element_sim(float dt) const
 {
+	bool chunk_was_updated = false;
+
 	for (int i = level_width - 1; i >= 0; i--)
 	{
 		for (int j = level_height - 1; j >= 0; j--)
@@ -47,19 +43,28 @@ void game_level::update_element_sim()
 				//Если объект - песок
 				if (read_id == 1)
 				{
-					update_sand(i, j);
+					chunk_was_updated = update_sand(i, j);
 				}
 				// Если объект - вода
 				else if (read_id == 2)
 				{
-					update_water(i, j);
+					chunk_was_updated = update_water(i, j);
+				}
+				else if (read_id == 3)
+				{
+					chunk_was_updated = update_stone(i, j);
 				}
 			}
 		}
 	}
-
-	delete update_structure;
-	update_structure = new bool[level_width * level_height];
+	
+	for (short int i = 0; i < level_width - 1; i++)
+	{
+		for (short int j = 0; j < level_height - 1; j++)
+		{
+			update_structure[compute_idx(i, j)] = !update_structure[compute_idx(i, j)];
+		}
+	}
 }
 
 void game_level::draw(sprite_renderer* renderer) const
@@ -82,34 +87,41 @@ void game_level::draw(sprite_renderer* renderer) const
 	}
 }
 
-void game_level::clear()
+void game_level::clear() const
 {
-	elements_init(level_width * level_height);
+	const int n = level_height * level_width;
+	
+	for (int i = 0; i < n; i++)
+	{
+		delete elements->at(i);
+	}
+	delete elements;
+	delete update_structure;
 }
 
-uint32_t game_level::compute_idx(const uint32_t x, const uint32_t y) const
+int game_level::compute_idx(const int x, const int y) const
 {
 	return level_width * y + x;
 }
 
-bool game_level::is_element_in_bounds(const uint32_t x, const uint32_t y) const
+bool game_level::is_element_in_bounds(const int& x, const int& y) const
 {
 	if (x < 0 || x > level_width - 1 || y < 0 || y > level_height - 1) return false;
 	return true;
 }
 
-bool game_level::is_empty(const uint32_t x, const uint32_t y) const
+bool game_level::is_empty(const int& x, const int& y) const
 {
-	return is_element_in_bounds(x, y) && elements[compute_idx(x, y)] == nullptr;
+	return is_element_in_bounds(x, y) && get_element_at(x, y)->id == nullptr;
 }
 
-bool game_level::is_water(uint32_t x, uint32_t y) const
+bool game_level::is_water(const int& x, const int& y) const
 {
 	return
 		*get_element_at(x, y)->id == 2;
 }
 
-bool game_level::is_element_completely_surrounded(uint32_t x, uint32_t y) const
+bool game_level::is_element_completely_surrounded(const int x, const int y) const
 {
 	// Top
 	if (is_element_in_bounds(x, y - 1) && !is_empty(x, y - 1)) {
@@ -147,25 +159,40 @@ bool game_level::is_element_completely_surrounded(uint32_t x, uint32_t y) const
 	return true;
 }
 
-element_particle* game_level::get_element_at(const uint32_t x, const uint32_t y) const
+element_particle* game_level::get_element_at(const int& x, const int& y) const
 {
 	return
-		elements[compute_idx(x, y)];
+		elements->at(compute_idx(x, y));
 }
 
 void game_level::put_element(
-	const uint32_t x, 
-	const uint32_t y, 
-	element_particle* element
+	const short int& x,
+	const short int& y,
+	const short int& element_id
 ) const
 {
-	if (is_element_in_bounds(x, y) && (is_empty(x, y) || element == nullptr))
+	if (is_element_in_bounds(x, y) && (is_empty(x, y) || element_id == 0))
 	{
-		elements[compute_idx(x, y)] = element;
-	}
+		switch (element_id)
+		{
+		case 0:
+			elements->at(compute_idx(x, y)) = new element_particle(elements_initializer::empty());
+			break;
+		case 1:
+			elements->at(compute_idx(x, y)) = new element_particle(elements_initializer::sand());
+			break;
+		case 2:
+			elements->at(compute_idx(x, y)) = new element_particle(elements_initializer::water());
+			break;
+		case 3:
+			elements->at(compute_idx(x, y)) = new element_particle(elements_initializer::stone());
+			break;
+		default: ;
+		}
+	}	
 }
 
-bool game_level::is_element_updated(uint8_t x, uint8_t y) const
+bool game_level::is_element_updated(const int& x, const int& y) const
 {
 
 	return update_structure[compute_idx(x, y)];
@@ -175,21 +202,89 @@ bool game_level::is_element_updated(uint8_t x, uint8_t y) const
 // Function to put pixels 
 // at subsequence points 
 void game_level::draw_circle(
-	const int xc,
-	const int yc,
-	const int x, 
-	const int y,
-	element_particle* element
+	const int& xc,
+	const int& yc,
+	const int& x, 
+	const int& y,
+	const int& element_id
 ) const
 {
-	put_element(xc + x, yc + y, element);
-	put_element(xc - x, yc + y, element);
-	put_element(xc + x, yc - y, element);
-	put_element(xc - x, yc - y, element);
-	put_element(xc + y, yc + x, element);
-	put_element(xc - y, yc + x, element);
-	put_element(xc + y, yc - x, element);
-	put_element(xc - y, yc - x, element);
+	put_element(xc + x, yc + y, element_id);
+	put_element(xc - x, yc + y, element_id);
+	put_element(xc + x, yc - y, element_id);
+	put_element(xc - x, yc - y, element_id);
+	put_element(xc + y, yc + x, element_id);
+	put_element(xc - y, yc + x, element_id);
+	put_element(xc + y, yc - x, element_id);
+	put_element(xc - y, yc - x, element_id);
+}
+
+void game_level::circle_bres(
+	const int xc,
+	const int yc,
+	const int brush_radius, 
+	sprite_renderer *renderer
+) const
+{
+	int x = 0, y = brush_radius;
+	int d = 3 - 2 * brush_radius;
+	draw_circle(
+		xc,
+		yc,
+		x,
+		y,
+		renderer
+	);
+	while (y >= x)
+	{
+		// For each pixel we will 
+		// draw all eight pixels
+		x++;
+
+		// Check for decision parameter 
+		// and correspondingly  
+		// update d, x, y 
+		if (d > 0)
+		{
+			y--;
+			d = d + 4 * (x - y) + 10;
+		}
+		else
+			d = d + 4 * x + 6;
+		draw_circle(
+			xc,
+			yc,
+			x,
+			y,
+			renderer
+		);
+	}
+}
+
+void game_level::draw_circle(
+	const int xc, 
+	const int yc, 
+	const int x,
+	const int y, 
+	sprite_renderer* renderer
+)
+{
+	put_pixel(xc + x, yc + y, renderer);
+	put_pixel(xc - x, yc + y, renderer);
+	put_pixel(xc + x, yc - y, renderer);
+	put_pixel(xc - x, yc - y, renderer);
+	put_pixel(xc + y, yc + x, renderer);
+	put_pixel(xc - y, yc + x, renderer);
+	put_pixel(xc + y, yc - x, renderer);
+	put_pixel(xc - y, yc - x, renderer);
+}
+
+void game_level::put_pixel(const int x, const int y, sprite_renderer* renderer)
+{
+	renderer->draw_sprite(
+		glm::vec2(x, y),
+		glm::vec2(1.0f)
+	);
 }
 
 // Function for circle-generation 
@@ -197,8 +292,8 @@ void game_level::draw_circle(
 void game_level::circle_bres(
 	const int xc, 
 	const int yc,
-	int r,
-	element_particle* element
+	const int r,
+	const int element_id
 ) const
 {
 	int x = 0, y = r;
@@ -208,7 +303,7 @@ void game_level::circle_bres(
 		yc, 
 		x, 
 		y, 
-		element
+		element_id
 	);
 	while (y >= x)
 	{
@@ -231,29 +326,33 @@ void game_level::circle_bres(
 			yc, 
 			x, 
 			y, 
-			element
+			element_id
 		);
 	}
 }
 
-// TODO: Реализовать физику (симуляция через for не подходит, нужно попробовать что-то другое)
-// TODO: Реализовать работу обновлений частиц (структура update_structure)
-void game_level::update_sand(uint32_t xpos, uint32_t ypos) const
+// TODO: Реализовать 
+
+bool game_level::update_sand(const int x_position, const int y_position) const
 {
-	const uint32_t element_idx = compute_idx(xpos, ypos);
 
-	if (!is_element_updated(xpos, ypos))
-		return;
+	if (!is_element_updated(x_position, y_position))
+		return true;
 
+	const uint32_t element_idx = compute_idx(x_position, y_position);
 	bool can_be_updated = false;
 	int x_offset = 0;
 	int y_offset = 0;
-	const int offset = int_rand(0, 3);
+	const int offset = int_rand(0, 4);
 
 	// "Просмотр вниз"
 	for (int i = offset; i < 5; i++)
 	{
-		if (is_element_in_bounds(xpos, ypos + i) && (is_empty(xpos, ypos + i) || is_water(xpos, ypos + i)))
+		if (
+			is_element_in_bounds(x_position, y_position + i) 
+			&& (is_empty(x_position, y_position + i) 
+				|| is_water(x_position, y_position + i))
+			)
 		{
 			y_offset = i;
 			can_be_updated = true;
@@ -263,22 +362,25 @@ void game_level::update_sand(uint32_t xpos, uint32_t ypos) const
 	if (can_be_updated)
 	{
 		update_structure[element_idx] = true;
-		update_structure[compute_idx(xpos + x_offset, ypos + y_offset)] = true;
+		update_structure[compute_idx(x_position, y_position + y_offset)] = true;
 
 		std::swap(
-			elements[element_idx],
-			elements[compute_idx(xpos + x_offset, ypos + y_offset)]
+			elements->at(compute_idx(x_position, y_position)),
+			elements->at(compute_idx(x_position, y_position + y_offset))
 		);
 
-		return;
+		return true;
 	}
 
 	// Просмотр по диоганали в левую сторону
 	for (int i = offset; i < 3; i++)
 	{
-		if (is_element_in_bounds(xpos - i, ypos + i) && (is_empty(xpos - i, ypos + i) || is_water(xpos - i, ypos + i)))
+		if (
+			is_element_in_bounds(x_position - i, y_position + i)
+			&& is_empty(x_position - i, y_position + i)
+			)
 		{
-			x_offset = -i;
+			x_offset = i;
 			y_offset = i;
 			can_be_updated = true;
 		}
@@ -287,20 +389,23 @@ void game_level::update_sand(uint32_t xpos, uint32_t ypos) const
 	if (can_be_updated)
 	{
 		update_structure[element_idx] = true;
-		update_structure[compute_idx(xpos + x_offset, ypos + y_offset)] = true;
+		update_structure[compute_idx(x_position - x_offset, y_position + y_offset)] = true;
 
 		std::swap(
-			elements[element_idx],
-			elements[compute_idx(xpos + x_offset, ypos + y_offset)]
+			elements->at(compute_idx(x_position, y_position)),
+			elements->at(compute_idx(x_position - x_offset, y_position + y_offset))
 		);
 
-		return;
+		return true;
 	}
 
 	// Просмотр по диоганали в правую сторону
 	for (int i = offset; i < 3; i++)
 	{
-		if (is_element_in_bounds(xpos + i, ypos + i) && (is_empty(xpos + i, ypos + i) || is_water(xpos + i, ypos + i)))
+		if (
+			is_element_in_bounds(x_position + i, y_position + i) 
+			&& is_empty(x_position + i, y_position + i)
+			)
 		{
 			x_offset = i;
 			y_offset = i;
@@ -311,32 +416,38 @@ void game_level::update_sand(uint32_t xpos, uint32_t ypos) const
 	if (can_be_updated)
 	{
 		update_structure[element_idx] = true;
-		update_structure[compute_idx(xpos + x_offset, ypos + y_offset)] = true;
+		update_structure[compute_idx(x_position + x_offset, y_position + y_offset)] = true;
 
 		std::swap(
-			elements[element_idx],
-			elements[compute_idx(xpos + x_offset, ypos + y_offset)]
+			elements->at(compute_idx(x_position, y_position)),
+			elements->at(compute_idx(x_position + x_offset, y_position + y_offset))
 		);
+
+		return true;
 	}
 
+	return false;
 }
 
-void game_level::update_water(uint32_t xpos, uint32_t ypos) const
+bool game_level::update_water(const int x_position, const int y_position) const
 {
-	const uint32_t element_idx = compute_idx(xpos, ypos);
 
-	if (!is_element_updated(xpos, ypos))
-		return;
+	if (!is_element_updated(x_position, y_position))
+		return true;
 
 	bool can_be_updated = false;
 	int x_offset = 0;
 	int y_offset = 0;
-	const int offset = int_rand(0, 3);
+	const uint32_t element_idx = compute_idx(x_position, y_position);
+	const int offset = int_rand(0, 6);
 
 	// "Просмотр вниз"
-	for (int i = offset; i < 5; i++)
+	for (int i = offset; i < 7; i++)
 	{
-		if (is_element_in_bounds(xpos, ypos + i) && is_empty(xpos, ypos + i))
+		if (
+			is_element_in_bounds(x_position, y_position + i)
+			&& is_empty(x_position, y_position + i)
+			)
 		{
 			y_offset = i;
 			can_be_updated = true;
@@ -346,22 +457,25 @@ void game_level::update_water(uint32_t xpos, uint32_t ypos) const
 	if (can_be_updated)
 	{
 		update_structure[element_idx] = true;
-		update_structure[compute_idx(xpos, ypos + y_offset)] = true;
-
+		update_structure[compute_idx(x_position, y_position + y_offset)] = true;
+		
 		std::swap(
-			elements[element_idx],
-			elements[compute_idx(xpos, ypos + y_offset)]
+			elements->at(compute_idx(x_position, y_position)),
+			elements->at(compute_idx(x_position, y_position + y_offset))
 		);
-
-		return;
+		
+		return true;
 	}
 
 	// Просмотр по диагонали в левую сторону
-	for (int i = offset; i < 3; i++)
+	for (int i = offset; i < 7; i++)
 	{
-		if (is_element_in_bounds(xpos - i, ypos + i) && is_empty(xpos - i, ypos + i))
+		if (
+			is_element_in_bounds(x_position - i, y_position + i) 
+			&& is_empty(x_position - i, y_position + i)
+			)
 		{
-			x_offset = -i;
+			x_offset = i;
 			y_offset = i;
 			can_be_updated = true;
 		}
@@ -370,20 +484,20 @@ void game_level::update_water(uint32_t xpos, uint32_t ypos) const
 	if (can_be_updated)
 	{
 		update_structure[element_idx] = true;
-		update_structure[compute_idx(xpos + x_offset, ypos + y_offset)] = true;
+		update_structure[compute_idx(x_position - x_offset, y_position + y_offset)] = true;
 
 		std::swap(
-			elements[element_idx],
-			elements[compute_idx(xpos + x_offset, ypos + y_offset)]
+			elements->at(compute_idx(x_position, y_position)),
+			elements->at(compute_idx(x_position - x_offset, y_position + y_offset))
 		);
 
-		return;
+		return true;
 	}
 
 	// Просмотр в левую сторону
-	for (int i = offset; i < 5; i++)
+	for (int i = offset; i < 9; i++)
 	{
-		if (is_element_in_bounds(xpos - i, ypos) && is_empty(xpos - i, ypos))
+		if (is_element_in_bounds(x_position - i, y_position) && is_empty(x_position - i, y_position))
 		{
 			x_offset = i;
 			can_be_updated = true;
@@ -393,20 +507,20 @@ void game_level::update_water(uint32_t xpos, uint32_t ypos) const
 	if (can_be_updated)
 	{
 		update_structure[element_idx] = true;
-		update_structure[compute_idx(xpos - x_offset, ypos)] = true;
+		update_structure[compute_idx(x_position - x_offset, y_position)] = true;
 
 		std::swap(
-			elements[element_idx],
-			elements[compute_idx(xpos - x_offset, ypos)]
+			elements->at(compute_idx(x_position, y_position)),
+			elements->at(compute_idx(x_position - x_offset, y_position))
 		);
 
-		return;
+		return true;
 	}
 
 	// Просмотр по диагонали в правую сторону
-	for (int i = offset; i < 3; i++)
+	for (int i = offset; i < 7; i++)
 	{
-		if (is_element_in_bounds(xpos + i, ypos + i) && is_empty(xpos + i, ypos + i))
+		if (is_element_in_bounds(x_position + i, y_position + i) && is_empty(x_position + i, y_position + i))
 		{
 			x_offset = i;
 			y_offset = i;
@@ -417,20 +531,20 @@ void game_level::update_water(uint32_t xpos, uint32_t ypos) const
 	if (can_be_updated)
 	{
 		update_structure[element_idx] = true;
-		update_structure[compute_idx(xpos + x_offset, ypos + y_offset)] = true;
+		update_structure[compute_idx(x_position + x_offset, y_position + y_offset)] = true;
 
 		std::swap(
-			elements[element_idx],
-			elements[compute_idx(xpos + x_offset, ypos + y_offset)]
+			elements->at(compute_idx(x_position, y_position)),
+			elements->at(compute_idx(x_position + x_offset, y_position + y_offset))
 		);
 
-		return;
+		return true;
 	}
 
 	// Просмотр в правую сторону
-	for (int i = offset; i < 5; i++)
+	for (int i = offset; i < 9; i++)
 	{
-		if (is_element_in_bounds(xpos + i, ypos) && is_empty(xpos + i, ypos))
+		if (is_element_in_bounds(x_position + i, y_position) && is_empty(x_position + i, y_position))
 		{
 			x_offset = i;
 			can_be_updated = true;
@@ -440,13 +554,29 @@ void game_level::update_water(uint32_t xpos, uint32_t ypos) const
 	if (can_be_updated)
 	{
 		update_structure[element_idx] = true;
-		update_structure[compute_idx(xpos + x_offset, ypos)] = true;
-
+		update_structure[compute_idx(x_position + x_offset, y_position)] = true;
+		
 		std::swap(
-			elements[element_idx],
-			elements[compute_idx(xpos + x_offset, ypos)]
+			elements->at(compute_idx(x_position, y_position)),
+			elements->at(compute_idx(x_position + x_offset, y_position + y_offset))
 		);
 
-		return;
+		return true;
 	}
+
+	return false;
+}
+
+bool game_level::update_stone(int x_position, int y_position) const
+{
+
+	return true;
+
+}
+
+bool game_level::update_salt(int x_position, int y_position)
+{
+
+	return true;
+
 }

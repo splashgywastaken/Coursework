@@ -17,7 +17,7 @@ void framebuffer_size_callback(
 void key_callback(
     GLFWwindow* window, 
     int key, 
-    int scancode, 
+    int scan_code, 
     int action, 
     int mode
 );
@@ -29,8 +29,8 @@ void mouse_button_callback(
 );
 void scroll_callback(
     GLFWwindow* window, 
-    double xoffset, 
-    double yoffset
+    double x_offset, 
+    double y_offset
 );
 
 void mouse_hold(GLFWwindow* window);
@@ -40,14 +40,14 @@ float get_random_float(
 );
 
 // Ширина экрана
-constexpr unsigned int screen_width = 800;
+constexpr unsigned int screen_width = 240;
 // Высота экрана
-constexpr unsigned int screen_height = 600;
+constexpr unsigned int screen_height = 240;
 
 bool left_mouse_button_pressed = false;
 bool right_mouse_button_pressed = false;
 int brush_element_id = 1;
-int brush_radius = 32;
+int brush_radius = 16;
 
 element_sim* sandbox;
 
@@ -82,6 +82,10 @@ int main(int argc, char* argv[])
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    // Спрятал курсор
+    // --------------------
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
     // Конфигурация OpenGL
     // --------------------
     glViewport(0, 0, screen_width, screen_height);
@@ -95,14 +99,19 @@ int main(int argc, char* argv[])
 
     // deltaTime переменные
     // -------------------
-    float delta_time = 0.0f;
-    float last_frame = 0.0f;
+    double delta_time = 0.0;
+    double last_frame = 0.0;
     
     while (!glfwWindowShouldClose(window))
     {
+        // Вычисление позиции мышки для обработки при рендере:
+        // --------------------
+        double x_position, y_position;
+        glfwGetCursorPos(window, &x_position, &y_position);
+
         // Вычисление delta времени
         // --------------------
-        const float current_frame = glfwGetTime();
+        const double current_frame = glfwGetTime();
         delta_time = current_frame - last_frame;
         last_frame = current_frame;
         glfwPollEvents();
@@ -119,7 +128,7 @@ int main(int argc, char* argv[])
         // ------
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        sandbox->render();
+        sandbox->render(brush_element_id, brush_radius, glm::vec2(x_position, y_position));
 
         glfwSwapBuffers(window);
     }
@@ -143,13 +152,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     
 }
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void scroll_callback(GLFWwindow* window, const double x_offset, const double y_offset)
 {
-	if (yoffset < 0 || brush_radius > 0)
+	if (y_offset < 0 && brush_radius > 1)
 	{
         brush_radius--;
 	}
-	if (yoffset > 0 || brush_radius <= 64)
+    else if (y_offset > 0 && brush_radius <= 64)
 	{
         brush_radius++;
 	}
@@ -159,45 +168,24 @@ void mouse_hold(GLFWwindow* window)
 {
     if (left_mouse_button_pressed)
     {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
+        double x_position, y_position;
+        glfwGetCursorPos(window, &x_position, &y_position);
 
-        element_particle* element = nullptr;
-        if (brush_element_id == 1)
-        {
-	        element = 
-                new element_particle(
-                    elements_initializer::sand(glm::vec2(0.0f))
-                );
-        } else if (brush_element_id == 2)
-        {
-            element =
-                new element_particle(
-                    elements_initializer::water(glm::vec2(0.0f))
-                );
-        } else if (brush_element_id == 3)
-        {
-            element =
-                new element_particle(
-                    elements_initializer::stone()
-                );
-        }
-
-        sandbox->draw_circle(element, xpos, ypos, brush_radius);
+        sandbox->draw_circle(brush_element_id, x_position, y_position, brush_radius);
     }
     if (right_mouse_button_pressed)
     {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
+        double x_position, y_position;
+        glfwGetCursorPos(window, &x_position, &y_position);
 
-        sandbox->draw_circle(nullptr, xpos, ypos, brush_radius);
+        sandbox->draw_circle(0, x_position, y_position, brush_radius);
     }
 }
 
 void key_callback(
     GLFWwindow* window,
     const int key, 
-    int scancode,
+    int scan_code,
     const int action,
     int mode
 )

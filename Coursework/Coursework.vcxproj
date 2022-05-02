@@ -161,7 +161,6 @@
     <ClInclude Include="element_sim.h" />
     <ClInclude Include="empty.h" />
     <ClInclude Include="game_level.h" />
-    <ClInclude Include="game_state.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />

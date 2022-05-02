@@ -23,53 +23,46 @@ class elements_initializer
 {
 
 public:
-	static element_particle empty()
+	static element_particle sand()
 	{
-		return {
-			0,
-			0,
-			glm::vec2(0.0f),
-			glm::vec3(0.0f)
-		};
-	}
-
-	static element_particle sand(glm::vec2 velocity)
-	{
-		const float r = get_random_int(32, 64);
+		const float r = static_cast<float>(get_random_int()) / (100.f * 255.f);
 
 		return {
 			1,
 			1,
-			velocity,
-			glm::vec3(216.0f / 255.0f, 169.0f / 255.0f, r / 255.0f)
+			glm::vec3(216.0f * r, 169.0f * r, 64 / 255.0f)
 		};
 	}
 
-	static element_particle water(glm::vec2 velocity)
+	static element_particle water()
 	{
-		const float r = get_random_int(214, 255);
-
+		const float r = static_cast<float>(get_random_int()) / (100.f * 255.f);
+		
 		return {
 			2,
 			2,
-			velocity,
-			glm::vec3(54 / 255.0f, 26 / 255.0f, r / 255.0f)
+			glm::vec3(54.0f * r, 26.0f * r, 192 * r)
 		};
 	}
 
 	static element_particle stone()
 	{
-		const float r = get_random_int(50, 125);
+		const float r = static_cast<float>(get_random_int(0, 100)) / (100.f * 255.f);
+
 		return {
 			0,
 			3,
-			glm::vec2(0.0f),
-			glm::vec3(r/ 255.0f, r / 255.0f, r / 255.0f)
+			glm::vec3(125 * r, 125 * r, 125 * r)
 		};
 	}
 
+	static element_particle empty()
+	{
+		return {};
+	}
+
 private:
-	static float get_random_int(const float min, const float max)
+	static int get_random_int(const int min = 70, const int max = 100)
 	{
 		static thread_local std::mt19937 generator;
 		const std::uniform_int_distribution<int> distribution(min, max);
