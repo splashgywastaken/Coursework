@@ -8,7 +8,7 @@
 
 #include "elements_initializer.h"
 
-// GLFW function declarations
+// Определение функций GLFW
 void framebuffer_size_callback(
     GLFWwindow* window, 
     int width, 
@@ -33,21 +33,10 @@ void scroll_callback(
     double y_offset
 );
 
-void mouse_hold(GLFWwindow* window);
-float get_random_float(
-    float min,
-    float max
-);
-
 // Ширина экрана
 constexpr unsigned int screen_width = 240;
 // Высота экрана
 constexpr unsigned int screen_height = 240;
-
-bool left_mouse_button_pressed = false;
-bool right_mouse_button_pressed = false;
-int brush_element_id = 1;
-int brush_radius = 16;
 
 element_sim* sandbox;
 
@@ -91,7 +80,7 @@ int main(int argc, char* argv[])
     glViewport(0, 0, screen_width, screen_height);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    
     // инициализация
     // ---------------
     sandbox = new element_sim(screen_width, screen_height);
@@ -99,8 +88,8 @@ int main(int argc, char* argv[])
 
     // deltaTime переменные
     // -------------------
-    double delta_time = 0.0;
-    double last_frame = 0.0;
+    int number_of_frames = 0;
+    double last_time = glfwGetTime();
     
     while (!glfwWindowShouldClose(window))
     {
@@ -111,14 +100,19 @@ int main(int argc, char* argv[])
 
         // Вычисление delta времени
         // --------------------
-        const double current_frame = glfwGetTime();
-        delta_time = current_frame - last_frame;
-        last_frame = current_frame;
+        const double current_time = glfwGetTime();
+        const double delta_time = current_time - last_time;
+        number_of_frames++;
+        if (delta_time >= 1.0)
+        {
+            sandbox->set_fps(number_of_frames);
+            number_of_frames = 0;
+            last_time += 1.0;
+        }
         glfwPollEvents();
-
         // Обработка пользовательского ввода
         // -----------------
-        mouse_hold(window);
+        sandbox->process_input(x_position, y_position);
 
         // Обновление состояния element_sim
         // -----------------
@@ -126,9 +120,9 @@ int main(int argc, char* argv[])
 
         // Рендер
         // ------
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0, 0, 0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
-        sandbox->render(brush_element_id, brush_radius, glm::vec2(x_position, y_position));
+        sandbox->render(glm::vec2(x_position, y_position));
 
         glfwSwapBuffers(window);
     }
@@ -143,43 +137,29 @@ int main(int argc, char* argv[])
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-
-    left_mouse_button_pressed = 
-        button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS;
-
-    right_mouse_button_pressed =
-        button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS;
-    
+    if (button >= 0 && button < 3)
+    {
+        if (action == GLFW_PRESS)
+        {
+            sandbox->mouse_buttons[button] = true;
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            sandbox->mouse_buttons[button] = false;
+        }
+    }
 }
 
 void scroll_callback(GLFWwindow* window, const double x_offset, const double y_offset)
 {
-	if (y_offset < 0 && brush_radius > 1)
+	if (y_offset < 0)
 	{
-        brush_radius--;
+        sandbox->change_brush_size(-1);
 	}
-    else if (y_offset > 0 && brush_radius <= 64)
+    else if (y_offset > 0)
 	{
-        brush_radius++;
+        sandbox->change_brush_size(1);
 	}
-}
-
-void mouse_hold(GLFWwindow* window)
-{
-    if (left_mouse_button_pressed)
-    {
-        double x_position, y_position;
-        glfwGetCursorPos(window, &x_position, &y_position);
-
-        sandbox->draw_circle(brush_element_id, x_position, y_position, brush_radius);
-    }
-    if (right_mouse_button_pressed)
-    {
-        double x_position, y_position;
-        glfwGetCursorPos(window, &x_position, &y_position);
-
-        sandbox->draw_circle(0, x_position, y_position, brush_radius);
-    }
 }
 
 void key_callback(
@@ -193,33 +173,15 @@ void key_callback(
     // когда пользователь нажимает эскейп, мы устанавливаем WindowShouldClose свойство на значение true,
     // благодаря чему закрываем приложение
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    {
+	    glfwSetWindowShouldClose(window, true);
+    }
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
-            sandbox->keys[key] = true;
-        else if (action == GLFW_RELEASE)
-            sandbox->keys[key] = false;
-    }
-    if (key == GLFW_KEY_C && action == GLFW_PRESS)
-    {
-        sandbox->clear_level();
-    }
-    if (key == GLFW_KEY_P && action == GLFW_PRESS)
-    {
-        sandbox->pause();
-    }
-    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
-    {
-        brush_element_id = 1;
-    }
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-    {
-        brush_element_id = 2;
-    }
-    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-    {
-        brush_element_id = 3;
+        {
+	        sandbox->pressed_keys[key] = true;
+        }
     }
 }
 
@@ -229,12 +191,5 @@ void framebuffer_size_callback(
     const int height
 )
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
-}
-
-float get_random_float(const float min, const float max)
-{
-	return min + static_cast <float> (rand()) / (RAND_MAX / (max - min));
 }

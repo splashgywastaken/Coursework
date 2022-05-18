@@ -1,46 +1,66 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "game_level.h"
+#include "elements_level.h"
 #include "sprite_renderer.h"
 #include "text_renderer.h"
 
 class element_sim
 {
+	// Поля
 public:
-	bool keys[1024]{};
+	bool *pressed_keys;
+	bool* mouse_buttons;
+private:
 	//Screen width and height
-	unsigned int width, height;
-	float dt;
-	bool pause_simulation = false;
+	unsigned int width_, height_;
+	std::string fps_ = "60";
+	bool simulation_is_paused_ = false;
+	bool show_fps_ = false;
+	int brush_radius_ = 8;
+	int brush_element_id_ = 1;
 	//Sprite renderer object:
-	sprite_renderer *renderer;
+	sprite_renderer *renderer_;
 	//Fonts renderer
-	text_renderer* text;
+	text_renderer* text_;
 	//Game level object
-	game_level *level;
-	//Constructor
+	elements_level *level_;
+
+	// Методы и конструкторы
+public:
 	element_sim(
 		unsigned width,
 		unsigned height
 	);
-	//Destructor
 	~element_sim();
 
-	//Initializing element_sim state (load up all shaders e.t.c.)
+	// Инициализация всех переменных
 	void init();
-	//Game loop
+	// Методы для игрового цикла
+	void process_input(int x_position, int y_position);
 	void update(float dt);
-	void render(int element_id, int brush_radius, glm::vec2 mouse_position) const;
+	void render(glm::vec2 mouse_position) const;
+
+	// Методы для изменения значений переменных
+	void change_brush_size(int delta);
+	void set_fps(int fps);
+	
+private:
+	// Метод для очистки сетки
 	void clear_level() const;
-
-	void pause();
-
+	// Методы для работы с булевыми переменными
+	void change_pause_value();
+	void change_show_fps_value();
+	// Метод для отрисовки круга на сетке
 	void draw_circle(
-		int element_id,
-		uint32_t cx, 
-		uint32_t cy, 
-		uint32_t r
+		uint32_t cx,
+		uint32_t cy
 	) const;
+	// Методы для обработки пользовательского ввода
+	void process_keyboard_input();
+	void process_mouse_input(
+		int x_position,
+		int y_position
+	);
 };
 #endif

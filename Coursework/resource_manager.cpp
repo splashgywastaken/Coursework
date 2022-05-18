@@ -7,7 +7,6 @@
 #include <stb_image.h>
 
 // Instantiate static variables
-std::map<std::string, texture_2d>    resource_manager::textures;
 std::map<std::string, shader>       resource_manager::shaders;
 
 
@@ -27,29 +26,11 @@ shader resource_manager::get_shader(const std::string& name)
     return shaders[name];
 }
 
-texture_2d resource_manager::load_texture(
-    const char* file, 
-    const bool alpha, 
-    const std::string& name
-)
-{
-    textures[name] = load_texture_from_file(file, alpha);
-    return textures[name];
-}
-
-texture_2d resource_manager::get_texture(const std::string& name)
-{
-    return textures[name];
-}
-
 void resource_manager::clear()
 {
     // (properly) delete all shaders	
     for (const auto& it : shaders)
         glDeleteProgram(it.second.id);
-    // (properly) delete all textures
-    for (const auto& it : textures)
-        glDeleteTextures(1, &it.second.id);
 }
 
 shader resource_manager::load_shader_from_file(
@@ -61,7 +42,6 @@ shader resource_manager::load_shader_from_file(
     // 1. retrieve the vertex/fragment source code from filePath
     std::string vertex_code;
     std::string fragment_code;
-    std::string geometry_code;
     try
     {
         // open files
@@ -77,15 +57,6 @@ shader resource_manager::load_shader_from_file(
         // convert stream into string
         vertex_code = v_shader_stream.str();
         fragment_code = f_shader_stream.str();
-        // if geometry shader path is present, also load a geometry shader
-        if (g_shader_file != nullptr)
-        {
-            std::ifstream geometry_shader_file(g_shader_file);
-            std::stringstream g_shader_stream;
-            g_shader_stream << geometry_shader_file.rdbuf();
-            geometry_shader_file.close();
-            geometry_code = g_shader_stream.str();
-        }
     }
     catch (std::exception& e)
     {
@@ -93,39 +64,11 @@ shader resource_manager::load_shader_from_file(
     }
     const char* v_shader_code = vertex_code.c_str();
     const char* f_shader_code = fragment_code.c_str();
-    const char* g_shader_code = geometry_code.c_str();
     // 2. now create shader object from source code
     shader shader;
     shader.compile(
         v_shader_code,
-        f_shader_code,
-        g_shader_file != nullptr ? g_shader_code : nullptr
+        f_shader_code
     );
     return shader;
-}
-
-texture_2d resource_manager::load_texture_from_file(const char* file, const bool alpha)
-{
-    // create texture object
-    texture_2d texture;
-    if (alpha)
-    {
-        texture.internal_format = GL_RGBA;
-        texture.image_format = GL_RGBA;
-    }
-    // load image
-    int width, height, nr_channels;
-    unsigned char* data = 
-        stbi_load(
-            file,
-            &width,
-            &height,
-            &nr_channels,
-            0
-        );
-    // now generate texture
-    texture.generate(width, height, data);
-    // and finally free image data
-    stbi_image_free(data);
-    return texture;
 }

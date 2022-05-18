@@ -5,19 +5,22 @@
 #include "element_particle.h"
 #include "resource_manager.h"
 
-/**
+/*
  * »нициализатор элементов дл€ создани€ новых на сетке
  * ќпределение значений переменных:
  *		“ипы элементов:
- *			0 - недвижимые объекты
- *			1 - двигающиес€ объекты
- *			2 - жидкости
- *			3 - газы (все что легче воздуха и при симул€ции поднимаетс€ вверх)
+ *		0 - недвижимые объекты
+ *		1 - двигающиес€ объекты
+ *		2 - жидкости
+ *		3 - газы (все что легче воздуха и при симул€ции поднимаетс€ вверх)
  *		»дентификаторы (id):
  *			0 - пустота,
  *			1 - песок,
  *			2 - вода
  *			3 - камень
+ *			4 - соль
+ *			5 - огонь
+ *			6 - дерево
  */
 class elements_initializer
 {
@@ -53,6 +56,39 @@ public:
 			0,
 			3,
 			glm::vec3(125 * r, 125 * r, 125 * r)
+		};
+	}
+
+	static element_particle salt()
+	{
+		const float r = static_cast<float>(get_random_int(90, 100)) / (100.f * 255.f);
+
+		return {
+			1,
+			4,
+			glm::vec3(252 * r, 225 * r, 245 * r)
+		};
+	}
+
+	static element_particle fire()
+	{
+		const float r = static_cast<float>(get_random_int(60, 90)) / (100.f * 255.f);
+		
+		return {
+			3,
+			5,
+			glm::vec3(247 * r, 30 * r, 53 * r)
+		};
+	}
+
+	static element_particle wood()
+	{
+		const float r = static_cast<float>(get_random_int(60, 80)) / (100.f * 255.f);
+		
+		return {
+			0,
+			6,
+			glm::vec3(94 * r, 65 * r, 47 * r)
 		};
 	}
 

@@ -2,40 +2,35 @@
 #define TEXT_RENDERER_H
 
 #include <map>
-
-#include <glad/glad.h>
 #include <glm/glm.hpp>
-
-#include "texture_2d.h"
 #include "shader.h"
 
-/// Holds all state information relevant to a character as loaded using FreeType
+/// Хранит в себе информацию относящуюся к символу, загруженному с помощью FreeType
 struct character {
-    unsigned int texture_id; // ID handle of the glyph texture
-    glm::ivec2   size;       // size of glyph
-    glm::ivec2   bearing;    // offset from baseline to left/top of glyph
-    unsigned int advance;    // horizontal offset to advance to next glyph
+    unsigned int texture_id; // ID - поле для глифа
+    glm::ivec2   size;       // Размер глифа
+    glm::ivec2   bearing;    // оффсет от основного уровня в левую верхнюю часть
+    unsigned int advance;    // горизонтальный оффсет для глифа
 };
 
 
-// A renderer class for rendering text displayed by a font loaded using the 
-// FreeType library. A single font is loaded, processed into a list of Character
-// items for later rendering.
+// Класс - рендерер для отрисовки текста использующий шрифт, обработанный
+// FreeType библиотекой. 
 class text_renderer
 {
 public:
-    // holds a list of pre-compiled Characters
+    // хранит список предварительно обработанных символов
     std::map<char, character> characters;
-    // shader used for text rendering
+    // шейдер используемый для отрисовки текста
     shader text_shader;
-    // constructor
+    // конструктор
     text_renderer(unsigned int width, unsigned int height);
-    // pre-compiles a list of characters from the given font
+    // обрабатывает списко символов из заданного шрифта
     void load(const std::string& font, unsigned int font_size);
-    // renders a string of text using the precompiled list of characters
+    // отрисовывает строку текста, используя предврательно обработанные символы шрифта
     void render_text(std::string text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0f));
 private:
-    // render state
+    // переменные для рендера
     unsigned int vao_, vbo_;
 };
 

@@ -2,9 +2,7 @@
 #define ELEMENT_PARTICLE_H
 
 #include <ostream>
-#include <glad/glad.h>
 #include <glm/glm.hpp>
-
 #include "resource_manager.h"
 
 /**

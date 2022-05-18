@@ -3,55 +3,40 @@
 
 #include <map>
 #include <string>
-
-#include <glad/glad.h>
-
 #include "shader.h"
-#include "texture_2d.h"
 
-
-// A static singleton ResourceManager class that hosts several
-// functions to load Textures and Shaders. Each loaded texture
-// and/or shader is also stored for future reference by string
-// handles. All functions and resources are static and no 
-// public constructor is defined.
+// Статический синглтон класс, который содержит в себе несколько
+// методов для загрузки шейдеров. Каждый загруженный шейдер
+// так же хранится с ссылкой на него в виде строки
+// Все методы и ресурсы статические, публичного конструктора
+// не определено
 class resource_manager
 {
 public:
-    // resource storage
+    // хранилище ресурсов
     static std::map<std::string, shader>    shaders;
-    static std::map<std::string, texture_2d> textures;
-    // loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
+    // загружает и генерирует шейдерную программу
+    // из .glsl файла с вершинным, фрагментым и
+    // (если такой указан) геометрическим шейдером
     static shader    load_shader(
 				        const char* v_shader_file,
 				        const char* f_shader_file,
 				        const char* g_shader_file,
 				        const std::string& name
 					);
-    // retrieves a stored shader
+    // возвращает хранимый шейдер
     static shader    get_shader(const std::string& name);
-    // loads (and generates) a texture from file
-    static texture_2d load_texture(
-        const char* file,
-        bool alpha,
-        const std::string& name
-    );
-    // retrieves a stored texture
-    static texture_2d get_texture(const std::string& name);
-    // properly de-allocates all loaded resources
+    // правильно освобождает память от подгруженных ресурсов
     static void      clear();
 private:
-    // private constructor, that is we do not want any actual resource manager objects.
-    // Its members and functions should be publicly available (static).
+    // private конструктор
     resource_manager() = default;
-    // loads and generates a shader from file
+    // загружает и генерирует шейдер из файла
     static shader    load_shader_from_file(
         const char* v_shader_file,
         const char* f_shader_file,
         const char* g_shader_file = nullptr
     );
-    // loads a single texture from file
-    static texture_2d load_texture_from_file(const char* file, bool alpha);
 };
 
 #endif

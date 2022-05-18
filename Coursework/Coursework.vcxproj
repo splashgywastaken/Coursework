@@ -83,6 +83,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\projects HDD\OpenGL\Projects\Coursework\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\projects HDD\OpenGL\Projects\Coursework\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -139,19 +141,19 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="elements_initializer.cpp" />
     <ClCompile Include="element_sim.cpp" />
-    <ClCompile Include="game_level.cpp" />
+    <ClCompile Include="elements_level.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="sprite_renderer.cpp" />
     <ClCompile Include="stb_image.cpp" />
-    <ClCompile Include="texture_2d.cpp" />
     <ClCompile Include="text_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,12 +162,11 @@
     <ClInclude Include="element_particle.h" />
     <ClInclude Include="element_sim.h" />
     <ClInclude Include="empty.h" />
-    <ClInclude Include="game_level.h" />
+    <ClInclude Include="elements_level.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="sprite_renderer.h" />
-    <ClInclude Include="texture_2d.h" />
     <ClInclude Include="text_renderer.h" />
   </ItemGroup>
   <ItemGroup>

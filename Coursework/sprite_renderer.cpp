@@ -1,5 +1,7 @@
 #include "sprite_renderer.h"
 
+#include "camera.h"
+
 sprite_renderer::sprite_renderer(shader shader)
     :
     shader_(shader),
@@ -44,11 +46,9 @@ void sprite_renderer::init_render_data()
 void sprite_renderer::draw_sprite(
     const glm::vec2 position,
     const glm::vec2 size,
-    const float rotate,
 	const glm::vec3 color
 )
 {
-    // prepare transformations
     this->shader_.use();
     auto model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));
