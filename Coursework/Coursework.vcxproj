@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>D:\projects HDD\OpenGL\Projects\Coursework\Libraries;D:\projects\OpenGL\Projects\Coursework\Libraries;$(LibraryPath)</LibraryPath>
-    <IncludePath>D:\projects HDD\OpenGL\Projects\Coursework\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\lehak\OneDrive\Documents\GitHub\Coursework\Libraries;D:\projects HDD\OpenGL\Projects\Coursework\Libraries;D:\projects\OpenGL\Projects\Coursework\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\lehak\OneDrive\Documents\GitHub\Coursework\Include;D:\projects HDD\OpenGL\Projects\Coursework\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
