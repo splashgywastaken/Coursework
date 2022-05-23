@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>D:\projects HDD\OpenGL\Projects\Coursework\Libraries;D:\projects\OpenGL\Projects\Coursework\Libraries;$(LibraryPath)</LibraryPath>
-    <IncludePath>D:\projects HDD\OpenGL\Projects\Coursework\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\lehak\OneDrive\Documents\GitHub\Coursework\Libraries;D:\projects HDD\OpenGL\Projects\Coursework\Libraries;D:\projects\OpenGL\Projects\Coursework\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\lehak\OneDrive\Documents\GitHub\Coursework\Include;D:\projects HDD\OpenGL\Projects\Coursework\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -161,7 +161,6 @@
     <ClInclude Include="elements_initializer.h" />
     <ClInclude Include="element_particle.h" />
     <ClInclude Include="element_sim.h" />
-    <ClInclude Include="empty.h" />
     <ClInclude Include="elements_level.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource_manager.h" />
