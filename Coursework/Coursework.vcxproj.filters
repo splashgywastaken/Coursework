@@ -87,7 +87,7 @@
       <Filter>elements</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>Файлы заголовков\utils</Filter>
+      <Filter>Файлы ресурсов</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

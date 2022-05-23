@@ -34,9 +34,9 @@ void scroll_callback(
 );
 
 // Ширина экрана
-constexpr unsigned int screen_width = 240;
+constexpr unsigned int screen_width = 480;
 // Высота экрана
-constexpr unsigned int screen_height = 240;
+constexpr unsigned int screen_height = 480;
 
 element_sim* sandbox;
 

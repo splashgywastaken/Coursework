@@ -12,7 +12,6 @@
  *		0 - недвижимые объекты
  *		1 - двигающиес€ объекты
  *		2 - жидкости
- *		3 - газы (все что легче воздуха и при симул€ции поднимаетс€ вверх)
  *		»дентификаторы (id):
  *			0 - пустота,
  *			1 - песок,
@@ -28,67 +27,67 @@ class elements_initializer
 public:
 	static element_particle sand()
 	{
-		const float r = static_cast<float>(get_random_int()) / (100.f * 255.f);
+		const float random_float = static_cast<float>(get_random_int()) / (100.f * 255.f);
 
 		return {
 			1,
 			1,
-			glm::vec3(216.0f * r, 169.0f * r, 64 / 255.0f)
+			glm::vec3(216.0f * random_float, 169.0f * random_float, 64 / 255.0f)
 		};
 	}
 
 	static element_particle water()
 	{
-		const float r = static_cast<float>(get_random_int()) / (100.f * 255.f);
+		const float random_float = static_cast<float>(get_random_int()) / (100.f * 255.f);
 		
 		return {
 			2,
 			2,
-			glm::vec3(54.0f * r, 26.0f * r, 192 * r)
+			glm::vec3(54.0f * random_float, 26.0f * random_float, 192 * random_float)
 		};
 	}
 
 	static element_particle stone()
 	{
-		const float r = static_cast<float>(get_random_int(0, 100)) / (100.f * 255.f);
+		const float random_float = static_cast<float>(get_random_int(0, 100)) / (100.f * 255.f);
 
 		return {
 			0,
 			3,
-			glm::vec3(125 * r, 125 * r, 125 * r)
+			glm::vec3(125 * random_float, 125 * random_float, 125 * random_float)
 		};
 	}
 
 	static element_particle salt()
 	{
-		const float r = static_cast<float>(get_random_int(90, 100)) / (100.f * 255.f);
+		const float random_float = static_cast<float>(get_random_int(90, 100)) / (100.f * 255.f);
 
 		return {
 			1,
 			4,
-			glm::vec3(252 * r, 225 * r, 245 * r)
+			glm::vec3(252 * random_float, 225 * random_float, 245 * random_float)
 		};
 	}
 
 	static element_particle fire()
 	{
-		const float r = static_cast<float>(get_random_int(60, 90)) / (100.f * 255.f);
+		const float random_float = static_cast<float>(get_random_int(60, 90)) / (100.f * 255.f);
 		
 		return {
 			3,
 			5,
-			glm::vec3(247 * r, 30 * r, 53 * r)
+			glm::vec3(247 * random_float, 30 * random_float, 53 * random_float)
 		};
 	}
 
 	static element_particle wood()
 	{
-		const float r = static_cast<float>(get_random_int(60, 80)) / (100.f * 255.f);
+		const float random_float = static_cast<float>(get_random_int(60, 80)) / (100.f * 255.f);
 		
 		return {
 			0,
 			6,
-			glm::vec3(94 * r, 65 * r, 47 * r)
+			glm::vec3(94 * random_float, 65 * random_float, 47 * random_float)
 		};
 	}
 

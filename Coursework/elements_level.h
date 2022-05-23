@@ -77,6 +77,13 @@ class elements_level
 	// дерево
 	bool update_wood(int x_position, int y_position) const;
 
+	// Генератор случайных чисел
+	static int int_rand(const int& min, const int& max) {
+		static thread_local std::mt19937 generator;
+		const std::uniform_int_distribution<int> distribution(min, max);
+		return distribution(generator);
+	}
+
 public:
 
 	// конструктор
@@ -129,12 +136,5 @@ public:
 		int y,
 		sprite_renderer* renderer
 	);
-
-	// Генератор случайных чисел
-	static int int_rand(const int& min, const int& max) {
-		static thread_local std::mt19937 generator;
-		const std::uniform_int_distribution<int> distribution(min, max);
-		return distribution(generator);
-	}
 };
 #endif

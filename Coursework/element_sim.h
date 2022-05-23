@@ -12,18 +12,18 @@ public:
 	bool *pressed_keys;
 	bool* mouse_buttons;
 private:
-	//Screen width and height
+	//Ширина и высота экрана
 	unsigned int width_, height_;
 	std::string fps_ = "60";
 	bool simulation_is_paused_ = false;
 	bool show_fps_ = false;
 	int brush_radius_ = 8;
 	int brush_element_id_ = 1;
-	//Sprite renderer object:
+	//Рендерер спрайтов для объектов:
 	sprite_renderer *renderer_;
-	//Fonts renderer
+	//Рендерер шрифтов
 	text_renderer* text_;
-	//Game level object
+	//Объект - игровой уровень
 	elements_level *level_;
 
 	// Методы и конструкторы
