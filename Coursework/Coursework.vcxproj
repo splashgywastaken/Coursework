@@ -161,7 +161,6 @@
     <ClInclude Include="elements_initializer.h" />
     <ClInclude Include="element_particle.h" />
     <ClInclude Include="element_sim.h" />
-    <ClInclude Include="empty.h" />
     <ClInclude Include="elements_level.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource_manager.h" />
